@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block main_gui %}
+<style type="text/css">
+    body {
+        font-family: 'Bebas Neue', cursive;
+    }
+
+    .h1 {
+        font-size: 54px;
+        line-height: 100%;
+    }
+    span {
+        font-family: 'Ubuntu', sans-serif;
+        font-size: medium;
+    }
+    table {
+        font-family: 'Ubuntu', sans-serif;
+        font-size: large;
+    }
+</style>
+<div class="container pt-5 justify-content-center col-md-10">
+    <h1 class="text-center">Iris Recognition System</h1>
+    <div class="d-flex justify-content-between">
+            
+            <br />
+
+            <a class="btn btn-sm btn-primary" href="{% url 'eval' %}"> Evaluate Image Database</a>
+                <form action="{% url 'verify' %}" method="POST"  enctype="multipart/form-data" >
+                {% csrf_token %}
+                <input type="file" name="image" required>
+                <!-- Text:  -->
+                <!-- <input type="text" name="test_value" required> -->
+                <input type="submit" value="Verify">
+                {{ output }}
+                </form>
+    </div>
+  
+            <br />
+            {% if image %}
+            <img src="{{ image }}" />
+            {% endif %}
+
+            {% for each in evaluation_quary %}
+            <br />
+            <p> Name of Image Database been evaluated: <span> {{each.name}}</span></p>
+            <p> Number of Image files: <span>{{each.no_files}}</span></p>
+            <p> Execution time: <span>{{each.enrollment_time}}</span></p>
+            {% endfor %}
+            <br/>
+
+            <p><span> {{ message }}</span></p>
+            {% if image_context %}
+            <div class="d-flex justify-content-between">
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <td><p>Number of matches found: <span>{{image_context.number_of_results}}</span></p><p> Verification time: <span>{{image_context.verification_time}}</span></p><p> On the right is the image that was verified. Blow are the matches found.</p>
+                        </td>
+                        <td>
+                            <img src="{{ image_context.image_to_verify }}" width="400" height="400">
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td><p>Results:</p></td>
+                    </tr>
+                    {% for each in image_context.images %}
+                    <tr>
+                        <td><img src="{{ each }}" > </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+
+            {% endif %}
+
+
+            
+</div>
+            <div class="loader-wrapper">
+                <span class="loader"><span class="loader-inner"></span></span>
+            </div>
+            <script>
+                $(window).on("load", function () {
+                    $(".loader-wrapper").fadeOut("slow");
+                });
+            </script>
+{% endblock main_gui %}
