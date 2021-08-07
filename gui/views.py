@@ -1,5 +1,5 @@
 
-import os
+import os, shutil
 import sys
 from django.shortcuts import render
 from django.conf import settings
@@ -30,22 +30,12 @@ def eval_casia1_view(request):
     return render(request, "home.html", context)
 
 
-def command_view(request):
-    # input_value = request.POST.get('image_file')
-    input_value = request.POST.get('test_value')
-
-    path = '//{}//{}'.format(settings.BASE_DIR, "test.py")
-
-    out = run([sys.executable, path, input_value], shell=False, stdout=PIPE)
-
-    print(out.stdout.decode("utf-8"))
-
-    return render(request, 'home.html', {'output': out.stdout.decode("utf-8")})
 
 
 def verification_view(request):
     image_upload = request.FILES['image']
     fs = FileSystemStorage()
+    shutil.rmtree(settings.MEDIA_ROOT, ignore_errors=True)
     filename = fs.save(image_upload.name, image_upload)
     image_fullpath = fs.open(filename)
     media_location = fs.url(filename)
@@ -57,7 +47,10 @@ def verification_view(request):
     out = run([sys.executable, path, path_to_image], shell=False, stdout=PIPE)
 
     result = out.stdout.decode("utf-8")
-    result = ast.literal_eval(result)
+    try:
+        result = ast.literal_eval(result)
+    except:
+        return render(request, 'home.html', {"message": "Error. The image is invalid. Can't be parsed"})
 
     if len(result) == 1:
         return render(request, 'home.html', {'message': result['error']})
@@ -80,8 +73,8 @@ def verification_view(request):
 
         
     image_context["images"] = image_locations
-    print(image_context)
-    image_contexture = {
+
+    image_context_package = {
         "image_context": image_context
     }
-    return render(request, 'home.html', image_contexture)
+    return render(request, 'home.html', image_context_package)
