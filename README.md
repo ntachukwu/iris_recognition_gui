@@ -17,10 +17,13 @@ cd iris-recognition_gui
 pip install -r requirements.txt
 ```
 
-Make migrations and run server
+Make migrations, export django settings to environment and runserver
 
 ```bash
 python manage.py migrate
+export DJANGO_SETTINGS_MODULE=gui_config.settings
 python manage.py runserver
 ```
+
+
 # Enjoy
