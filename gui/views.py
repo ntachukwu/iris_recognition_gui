@@ -1,13 +1,13 @@
 
 import os, shutil
 import sys
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
 from django.core.files import File
 from subprocess import run, PIPE
-from .models import EnrollModel
+from .models import EnrollModel, Profile
 import json, ast
 import tempfile
 
@@ -78,3 +78,22 @@ def verification_view(request):
         "image_context": image_context
     }
     return render(request, 'home.html', image_context_package)
+
+
+def profile_view(request):
+    image_upload = request.FILES["image"]
+    fs = FileSystemStorage()
+    filename = fs.save(image_upload.name, image_upload)
+    media_location = fs.url(filename)
+
+    path_to_image = '//{}//'.format(settings.BASE_DIR) + media_location
+    path_to_script = '//{}//{}'.format(settings.BASE_DIR, "verify_profile.py")
+
+    out = run([sys.executable, path_to_script, path_to_image], shell=False, stdout=PIPE)
+
+    result = out.stdout.decode("utf-8")
+
+    if len(result) != 4:
+        return render(request, 'home.html', {'message': result})
+    profile  = get_object_or_404(Profile, profileMatFileName = result[:3])
+    return render(request, 'home.html', {"profile": profile})

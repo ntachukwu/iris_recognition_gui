@@ -17,13 +17,29 @@ cd iris-recognition_gui
 pip install -r requirements.txt
 ```
 
-Make migrations, export django settings to environment and runserver
+Make migrations, export django settings to environment
 
 ```bash
 python manage.py migrate
 export DJANGO_SETTINGS_MODULE=gui_config.settings
+```
+
+Create superuser. Run the command below and provide your name and password at the prompt.
+
+```bash
+python manage.py createsuperuser
+```
+
+Run server
+```bash
 python manage.py runserver
 ```
 
+Click the "register a new profile" button on the home page or enter the url "localhost:8000/admin/"
+At the admin panel, click on "Add new profile".
+Fill in the profile details and enter a valid iris image for identifying the profile.
+
+
+Navigate back to the home screen at "localhost:8000" and login to view any profile detail.
 
 # Enjoy

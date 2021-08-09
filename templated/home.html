@@ -18,8 +18,45 @@
         font-size: large;
     }
 </style>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                    <form action="{% url 'profile' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="file" name="image" required>
+                    
+                        <input type="submit" value="Login">
+                    </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container pt-5 justify-content-center col-md-8">
     <h1 class="text-center">Iris Recognition System</h1>
+    <!-- Button trigger modal -->
+    <div class="d-flex justify-content-center">
+        <a class="btn btn-sm btn-danger" href="admin/">Register a new profile</a>
+        <p class="mx-3">Or If you have a user profile saved.</p>
+    <button type="button" class="btn-sm btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+        Login With Iris Image
+    </button>
+    </div>
+<br /><br/>
     <div class="d-flex justify-content-between">
             
             <br />
@@ -28,17 +65,13 @@
                 <form action="{% url 'verify' %}" method="POST"  enctype="multipart/form-data" >
                 {% csrf_token %}
                 <input type="file" name="image" required>
-                <!-- Text:  -->
-                <!-- <input type="text" name="test_value" required> -->
+
                 <input type="submit" value=" 2. Verify">
-                {{ output }}
+
                 </form>
     </div>
   
             <br />
-            {% if image %}
-            <img src="{{ image }}" />
-            {% endif %}
 
             {% for each in evaluation_quary %}
             <br />
@@ -66,8 +99,9 @@
                     </tr>
                     {% for each in image_context.images %}
                     <tr>
-                        <td><img src="{{ each }}" width="250" height="250" > </td>
+                        <td><p class="align-content-center">{{forloop.counter}}</p></td><td><img src="{{ each }}" width="250" height="250" > </td>
                     </tr>
+                    <tr><p><br/><br/></p></tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -76,6 +110,20 @@
             <a class="btn btn-primary" href="{% url 'home' %}">Go Home to verify another image</a>
 
             {% endif %}
+
+        {% if profile %}
+        <br/>
+        <h1> Welcome {{profile.first_name}} {{profile.last_name}}.</h1>
+        <table><tr><td>
+        <br />
+        <p> First name: <span> {{profile.first_name}}</span></p>
+        <p> Last name: <span>{{profile.last_name}}</span></p>
+        <p> Gender: <span>{{profile.gender}}</span></p>
+        <p> Marital Status: <span>{{profile.marital_status}}</span></p>
+        <p> Hobbies: <span>{{profile.hobbies}}</span></p>
+        <p> About Me: <span>{{profile.about_me}}</span></p>
+        </td><td></td></tr></table>
+        {% endif %}
 
 
 
@@ -88,5 +136,8 @@
                 $(window).on("load", function () {
                     $(".loader-wrapper").fadeOut("slow");
                 });
+                $('#myModal').on('shown.bs.modal', function () {
+                        $('#myInput').trigger('focus')
+                    })
             </script>
 {% endblock main_gui %}
